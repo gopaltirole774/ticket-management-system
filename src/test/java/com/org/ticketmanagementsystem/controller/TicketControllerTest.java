@@ -18,13 +18,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest(TicketController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -103,6 +103,43 @@ class TicketControllerTest {
                 .andExpect(status().isNotFound());
         verify(ticketService).getTicketById(1);
     }
+
+    @Test
+    void getAllTicketsTest() throws Exception {
+        when(ticketService.getAllTickets()).thenReturn(List.of(ticketResponseDto));
+        mockMvc.perform(get("/tickets"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$.[0].id").value(ticketResponseDto.getId()));
+        verify(ticketService).getAllTickets();
+
+    }
+
+    @Test
+    void getAllTicketsTestEmptyList()throws Exception{
+        when(ticketService.getAllTickets()).thenReturn(List.of());
+        mockMvc.perform(get("/tickets"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(0));
+        verify(ticketService).getAllTickets();
+    }
+
+    @Test
+    void deleteTicketTest() throws Exception{
+        mockMvc.perform(delete("/tickets/1"))
+                .andExpect(status().isOk());
+        verify(ticketService).deleteTicket(1);
+
+    }
+    @Test
+    void deleteTicketNotFoundTest() throws Exception{
+        doThrow(new TicketNotFoundException("Ticket not found")).when(ticketService).deleteTicket(1);
+        mockMvc.perform(delete("/tickets/1"))
+                .andExpect(status().isNotFound());
+        verify(ticketService).deleteTicket(1);
+    }
+
+
 
 
 }
