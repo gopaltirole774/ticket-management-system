@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.org.ticketmanagementsystem.enums.Category.LOGIN;
@@ -91,5 +92,36 @@ class TicketServiceImplTest {
         assertThrows(TicketNotFoundException.class, () -> ticketServiceImpl.getTicketById(1));
         verify(ticketRepository).findById(1);
     }
+     @Test
+    void deleteTicketTest(){
+        when(ticketRepository.findById(1)).thenReturn(Optional.of(ticket));
+        ticketServiceImpl.deleteTicket(1);
+        verify(ticketRepository).deleteById(1);
+    }
+
+    @Test
+    void deleteTicketNotFoundTest(){
+        when(ticketRepository.findById(1)).thenReturn(Optional.empty());
+        assertThrows(TicketNotFoundException.class, () -> ticketServiceImpl.deleteTicket(1));
+        verify(ticketRepository).findById(1);
+    }
+
+    @Test
+    void getAllTicketsTest(){
+        when(ticketRepository.findAll()).thenReturn(List.of(ticket));
+        List<TicketResponseDto> ticketResponseDtoList = ticketServiceImpl.getAllTickets();
+        assertNotNull(ticketResponseDtoList);
+        assertEquals(1, ticketResponseDtoList.size());
+        verify(ticketRepository).findAll();
+    }
+    @Test
+    void getAllTicketsListEmpty(){
+        when(ticketRepository.findAll()).thenReturn(List.of());
+        List<TicketResponseDto> ticketResponseDtoList = ticketServiceImpl.getAllTickets();
+        assertNotNull(ticketResponseDtoList);
+        assertEquals(0, ticketResponseDtoList.size());
+        verify(ticketRepository).findAll();
+    }
+
 
 }
