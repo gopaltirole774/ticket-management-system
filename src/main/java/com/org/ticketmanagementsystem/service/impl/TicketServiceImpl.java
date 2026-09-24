@@ -79,6 +79,7 @@ public class TicketServiceImpl implements TicketService {
         ticketRepository.deleteById(id);
 
     }
+
     @Override
     public TicketResponseDto updateTicket(TicketRequestDto ticketRequestDto, Integer id) {
         Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new TicketNotFoundException("Ticket not found with id: " + id));
@@ -89,6 +90,36 @@ public class TicketServiceImpl implements TicketService {
         ticket.setStatus(ticketRequestDto.getStatus());
         ticket.setCategory(ticketRequestDto.getCategory());
         ticket.setDescription(ticketRequestDto.getDescription());
+        Ticket updateTicket = ticketRepository.save(ticket);
+        return toResponse(updateTicket);
+
+
+    }
+
+    @Override
+    public TicketResponseDto patchTicket(TicketPatchRequestDto ticketPatchRequestDto, Integer id) {
+        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new TicketNotFoundException("Ticket not found with id: " + id));
+
+
+        if (ticketPatchRequestDto.getTitle() != null) {
+            ticket.setTitle(ticketPatchRequestDto.getTitle());
+        }
+        if (ticketPatchRequestDto.getCategory() != null) {
+            ticket.setCategory(ticketPatchRequestDto.getCategory());
+        }
+
+        if (ticketPatchRequestDto.getDescription() != null) {
+            ticket.setDescription(ticketPatchRequestDto.getDescription());
+        }
+
+        if (ticketPatchRequestDto.getPriority() != null) {
+            ticket.setPriority(ticketPatchRequestDto.getPriority());
+        }
+
+        if (ticketPatchRequestDto.getStatus() != null) {
+            ticket.setStatus(ticketPatchRequestDto.getStatus());
+        }
+
         Ticket updateTicket = ticketRepository.save(ticket);
         return toResponse(updateTicket);
 

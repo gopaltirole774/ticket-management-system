@@ -12,12 +12,13 @@ public interface TicketService {
 
     TicketResponseDto getTicketById(Integer id);
 
-
     List<TicketResponseDto> getAllTickets();
 
     void deleteTicket(Integer id);
 
     TicketResponseDto updateTicket(TicketRequestDto ticketRequestDto, Integer id);
+
+    TicketResponseDto patchTicket(TicketPatchRequestDto ticketPatchRequestDto, Integer id);
 
 
 

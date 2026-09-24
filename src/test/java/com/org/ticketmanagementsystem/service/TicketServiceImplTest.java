@@ -144,5 +144,22 @@ class TicketServiceImplTest {
         verify(ticketRepository).findById(1);
     }
 
+    @Test
+    void patchTicketTest() {
+        when(ticketRepository.findById(1)).thenReturn(Optional.of(ticket));
+        when(ticketRepository.save(ticket)).thenReturn(ticket);
+        TicketResponseDto ticketResponseDto = ticketServiceImpl.patchTicket(ticketPatchRequestDto, 1);
+        assertNotNull(ticketResponseDto);
+        assertEquals(ticketRequestDto.getCategory(), ticketResponseDto.getCategory());
+        verify(ticketRepository).findById(1);
+        verify(ticketRepository).save(ticket);
+    }
+
+    @Test
+    void patchTicketNotFoundTest() {
+        when(ticketRepository.findById(1)).thenReturn(Optional.empty());
+        assertThrows(TicketNotFoundException.class, () -> ticketServiceImpl.patchTicket(ticketPatchRequestDto, 1));
+        verify(ticketRepository).findById(1);
+    }
 
 }

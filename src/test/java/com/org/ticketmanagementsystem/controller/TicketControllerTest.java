@@ -162,5 +162,31 @@ class TicketControllerTest {
 
     }
 
+    @Test
+    void patchTicketTest() throws Exception {
+        when(ticketService.patchTicket(any(TicketPatchRequestDto.class), eq(1))).thenReturn(ticketResponseDto);
+        mockMvc.perform(patch("/tickets/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ticketPatchRequestDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(ticketResponseDto.getId()))
+                .andExpect(jsonPath("$.title").value(ticketPatchRequestDto.getTitle()))
+                .andExpect(jsonPath("$.description").value(ticketPatchRequestDto.getDescription()));
+
+        verify(ticketService).patchTicket(any(TicketPatchRequestDto.class), eq(1));
+
+    }
+
+    @Test
+   void patchTicketNotFoundTest() throws Exception {
+        when(ticketService.patchTicket(any(TicketPatchRequestDto.class), eq(1))).thenThrow(new TicketNotFoundException("Ticket not found"));
+        mockMvc.perform(patch("/tickets/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ticketPatchRequestDto)))
+                .andExpect(status().isNotFound());
+        verify(ticketService).patchTicket(any(TicketPatchRequestDto.class), eq(1));
+
+    }
+
 
 }
