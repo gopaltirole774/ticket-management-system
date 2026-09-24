@@ -20,7 +20,6 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -116,7 +115,7 @@ class TicketControllerTest {
     }
 
     @Test
-    void getAllTicketsTestEmptyList()throws Exception{
+    void getAllTicketsTestEmptyList() throws Exception {
         when(ticketService.getAllTickets()).thenReturn(List.of());
         mockMvc.perform(get("/tickets"))
                 .andExpect(status().isOk())
@@ -125,21 +124,43 @@ class TicketControllerTest {
     }
 
     @Test
-    void deleteTicketTest() throws Exception{
+    void deleteTicketTest() throws Exception {
         mockMvc.perform(delete("/tickets/1"))
                 .andExpect(status().isOk());
         verify(ticketService).deleteTicket(1);
 
     }
+
     @Test
-    void deleteTicketNotFoundTest() throws Exception{
+    void deleteTicketNotFoundTest() throws Exception {
         doThrow(new TicketNotFoundException("Ticket not found")).when(ticketService).deleteTicket(1);
         mockMvc.perform(delete("/tickets/1"))
                 .andExpect(status().isNotFound());
         verify(ticketService).deleteTicket(1);
     }
 
+    @Test
+    void updateTicketTest() throws Exception {
+        when(ticketService.updateTicket(any(TicketRequestDto.class), eq(1))).thenReturn(ticketResponseDto);
+        mockMvc.perform(put("/tickets/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ticketRequestDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(ticketResponseDto.getId()));
+        verify(ticketService).updateTicket(any(TicketRequestDto.class), any(Integer.class));
 
+    }
+
+    @Test
+    void updateTicketNotFoundTest() throws Exception {
+        when(ticketService.updateTicket(any(TicketRequestDto.class), eq(1))).thenThrow(new TicketNotFoundException("Ticket not found"));
+        mockMvc.perform(put("/tickets/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ticketRequestDto)))
+                .andExpect(status().isNotFound());
+        verify(ticketService).updateTicket(any(TicketRequestDto.class), any(Integer.class));
+
+    }
 
 
 }

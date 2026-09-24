@@ -39,7 +39,7 @@ class TicketServiceImplTest {
     private TicketPatchRequestDto ticketPatchRequestDto;
 
     @BeforeEach
-     void setUp() {
+    void setUp() {
         ticketRequestDto = new TicketRequestDto();
         ticketRequestDto.setDescription("Unable to login to the application using valid credentials");
         ticketRequestDto.setStatus(OPEN);
@@ -76,8 +76,9 @@ class TicketServiceImplTest {
         verify(ticketRepository).save(any(Ticket.class));
 
     }
+
     @Test
-    void getTicketByIdTest(){
+    void getTicketByIdTest() {
         when(ticketRepository.findById(1)).thenReturn(Optional.of(ticket));
         TicketResponseDto ticketResponseDto = ticketServiceImpl.getTicketById(1);
         assertNotNull(ticketResponseDto);
@@ -87,40 +88,60 @@ class TicketServiceImplTest {
     }
 
     @Test
-    void getTicketByIdNotFoundTest(){
+    void getTicketByIdNotFoundTest() {
         when(ticketRepository.findById(1)).thenReturn(Optional.empty());
         assertThrows(TicketNotFoundException.class, () -> ticketServiceImpl.getTicketById(1));
         verify(ticketRepository).findById(1);
     }
-     @Test
-    void deleteTicketTest(){
+
+    @Test
+    void deleteTicketTest() {
         when(ticketRepository.findById(1)).thenReturn(Optional.of(ticket));
         ticketServiceImpl.deleteTicket(1);
         verify(ticketRepository).deleteById(1);
     }
 
     @Test
-    void deleteTicketNotFoundTest(){
+    void deleteTicketNotFoundTest() {
         when(ticketRepository.findById(1)).thenReturn(Optional.empty());
         assertThrows(TicketNotFoundException.class, () -> ticketServiceImpl.deleteTicket(1));
         verify(ticketRepository).findById(1);
     }
 
     @Test
-    void getAllTicketsTest(){
+    void getAllTicketsTest() {
         when(ticketRepository.findAll()).thenReturn(List.of(ticket));
         List<TicketResponseDto> ticketResponseDtoList = ticketServiceImpl.getAllTickets();
         assertNotNull(ticketResponseDtoList);
         assertEquals(1, ticketResponseDtoList.size());
         verify(ticketRepository).findAll();
     }
+
     @Test
-    void getAllTicketsListEmpty(){
+    void getAllTicketsListEmpty() {
         when(ticketRepository.findAll()).thenReturn(List.of());
         List<TicketResponseDto> ticketResponseDtoList = ticketServiceImpl.getAllTickets();
         assertNotNull(ticketResponseDtoList);
         assertEquals(0, ticketResponseDtoList.size());
         verify(ticketRepository).findAll();
+    }
+
+    @Test
+    void updateTicketTest() {
+        when(ticketRepository.findById(1)).thenReturn(Optional.of(ticket));
+        when(ticketRepository.save(ticket)).thenReturn(ticket);
+        TicketResponseDto ticketResponseDto = ticketServiceImpl.updateTicket(ticketRequestDto, 1);
+        assertNotNull(ticketResponseDto);
+        assertEquals(ticketRequestDto.getCategory(), ticketResponseDto.getCategory());
+        verify(ticketRepository).findById(1);
+        verify(ticketRepository).save(ticket);
+    }
+
+    @Test
+    void updateTicketNotFoundTest() {
+        when(ticketRepository.findById(1)).thenReturn(Optional.empty());
+        assertThrows(TicketNotFoundException.class, () -> ticketServiceImpl.updateTicket(ticketRequestDto, 1));
+        verify(ticketRepository).findById(1);
     }
 
 

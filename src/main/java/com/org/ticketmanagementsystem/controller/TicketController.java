@@ -54,5 +54,13 @@ public class TicketController {
         ticketService.deleteTicket(id);
         return ResponseEntity.ok("Ticket deleted successfully");
     }
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a ticket by id")
+    @ApiResponse(responseCode = "200", description = "Ticket updated successfully")
+    @ApiResponse(responseCode = "404", description = "Ticket not found")
+    public ResponseEntity<TicketResponseDto> updateTicket(@PathVariable Integer id, @Valid @RequestBody TicketRequestDto ticketRequestDto) {
+        return ResponseEntity.ok(ticketService.updateTicket(ticketRequestDto, id));
+    }
+
 
 }
