@@ -1,5 +1,6 @@
 package com.org.ticketmanagementsystem.controller;
 
+import com.org.ticketmanagementsystem.dto.TicketPatchRequestDto;
 import com.org.ticketmanagementsystem.dto.TicketRequestDto;
 import com.org.ticketmanagementsystem.dto.TicketResponseDto;
 import com.org.ticketmanagementsystem.service.TicketService;
@@ -54,12 +55,21 @@ public class TicketController {
         ticketService.deleteTicket(id);
         return ResponseEntity.ok("Ticket deleted successfully");
     }
+
     @PutMapping("/{id}")
     @Operation(summary = "Update a ticket by id")
     @ApiResponse(responseCode = "200", description = "Ticket updated successfully")
     @ApiResponse(responseCode = "404", description = "Ticket not found")
     public ResponseEntity<TicketResponseDto> updateTicket(@PathVariable Integer id, @Valid @RequestBody TicketRequestDto ticketRequestDto) {
         return ResponseEntity.ok(ticketService.updateTicket(ticketRequestDto, id));
+    }
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "Patch a ticket by id")
+    @ApiResponse(responseCode = "200", description = "Ticket patched successfully")
+    @ApiResponse(responseCode = "404", description = "Ticket not found")
+    public ResponseEntity<TicketResponseDto> patchTicket(@PathVariable Integer id, @Valid @RequestBody TicketPatchRequestDto ticketPatchRequestDto) {
+        return ResponseEntity.ok(ticketService.patchTicket(ticketPatchRequestDto, id));
     }
 
 
