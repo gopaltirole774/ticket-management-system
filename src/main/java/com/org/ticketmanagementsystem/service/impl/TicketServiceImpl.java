@@ -1,5 +1,6 @@
 package com.org.ticketmanagementsystem.service.impl;
 
+import com.org.ticketmanagementsystem.dto.TicketPatchRequestDto;
 import com.org.ticketmanagementsystem.dto.TicketRequestDto;
 import com.org.ticketmanagementsystem.dto.TicketResponseDto;
 import com.org.ticketmanagementsystem.entity.Ticket;
@@ -77,7 +78,22 @@ public class TicketServiceImpl implements TicketService {
         ticketRepository.findById(id).orElseThrow(() -> new TicketNotFoundException("Ticket not found with id: " + id));
         ticketRepository.deleteById(id);
 
+    }
+    @Override
+    public TicketResponseDto updateTicket(TicketRequestDto ticketRequestDto, Integer id) {
+        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new TicketNotFoundException("Ticket not found with id: " + id));
+
+        ticket.setTitle(ticketRequestDto.getTitle());
+        ticket.setPriority(ticketRequestDto.getPriority());
+        ticket.setCreatedBy(ticketRequestDto.getCreatedBy());
+        ticket.setStatus(ticketRequestDto.getStatus());
+        ticket.setCategory(ticketRequestDto.getCategory());
+        ticket.setDescription(ticketRequestDto.getDescription());
+        Ticket updateTicket = ticketRepository.save(ticket);
+        return toResponse(updateTicket);
+
 
     }
+
 
 }
